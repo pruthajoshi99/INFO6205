@@ -1,0 +1,136 @@
+//1] 111. Minimum Depth of Binary Tree
+
+public int minDepth(TreeNode root) {
+    if(root==null) 
+        return 0;
+    int left = minDepth(root.left);
+    int right = minDepth(root.right);
+    if(left==0){
+        return 1+ right;
+    }
+    else if(right==0){
+        return 1+left;
+    }
+    else{
+        return 1+ Math.min(left,right);
+    }
+    
+}
+
+//2] 222. Count Complete Tree Nodes
+
+public int countNodes(TreeNode root) {
+    if(root!=null){
+        return 1+ countNodes(root.left) + countNodes(root.right);
+    }
+    return 0;
+}
+
+//3] 515. Find Largest Value in Each Tree Row
+
+public List<Integer> largestValues(TreeNode root) {
+    List<Integer> result = new ArrayList();
+    if(root==null){
+        return result;
+    }
+    Queue<TreeNode> q = new LinkedList<TreeNode>();
+    q.add(root);
+    while(!q.isEmpty()){
+        int qsize = q.size();
+        int max = Integer.MIN_VALUE;
+        for(int i=0;i<qsize;i++){
+            TreeNode currNode = q.poll();
+            max = max<currNode.val? currNode.val: max;
+            if(currNode.left!=null){
+                q.add(currNode.left);
+            }
+            if(currNode.right!=null){
+                q.add(currNode.right);
+            }
+        }
+        result.add(max);
+    }
+    return result;
+}
+
+//4] 872. Leaf-Similar Trees
+
+public boolean leafSimilar(TreeNode root1, TreeNode root2) {
+    List<Integer> list1 = new ArrayList();
+    List<Integer> list2 = new ArrayList();
+    dfs(root1,list1);
+    dfs(root2,list2);
+    return list1.equals(list2);
+}
+
+public void dfs(TreeNode root, List<Integer> result){
+    if(root!=null){
+        if(root.left==null && root.right==null)
+            result.add(root.val);
+        dfs(root.left, result);
+        dfs(root.right, result);    
+    }
+}
+
+//5] 1302. Deepest Leaves Sum
+
+public int deepestLeavesSum(TreeNode root) {
+    int maxDepth = getMaxDepth(root);
+    return dfs(root, 1, maxDepth);
+}
+
+public int getMaxDepth(TreeNode root) {
+    if (root == null) {
+        return 0;
+    }
+
+    return Math.max(getMaxDepth(root.left), getMaxDepth(root.right)) + 1;
+}
+
+public int dfs(TreeNode root, int curDepth, int maxDepth) {
+    if (root == null) {
+        return 0;
+    }
+
+    if (curDepth == maxDepth) {
+        return root.val;
+    }
+
+    int left = dfs(root.left, curDepth + 1, maxDepth);
+    int right = dfs(root.right, curDepth + 1, maxDepth);
+
+    return left + right;
+}
+
+//6] 366. Find Leaves of Binary Tree
+
+public List<List<Integer>> findLeaves(TreeNode root) {
+    List<List<Integer>> res = new ArrayList<>();
+    while(root.left != null || root.right != null) {
+        res.add(findLeaves(root, root, new ArrayList<Integer>()));
+    }
+    List<Integer> rootList = new ArrayList<>();
+    rootList.add(root.val);
+    res.add(rootList);
+    return res;
+}
+
+private List<Integer> findLeaves(TreeNode node, TreeNode parent, List<Integer> list) {
+    if(node == null) {
+        return list;
+    }
+    
+    if(node.left == null && node.right == null) {
+        // leave node
+        list.add(node.val);
+        if(parent.left == node) {
+            parent.left = null;
+        } else {
+            parent.right = null;
+        }
+    }
+
+    findLeaves(node.left, node, list);
+    findLeaves(node.right, node, list);
+    return list;
+}
